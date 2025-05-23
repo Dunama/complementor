@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Name Analysis</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='result.css') }}">
+</head>
+<body>
+    <div class="result-container">
+        <h1>{{ name }}</h1>
+        <h2>Here's what each letter of your name represents:</h2>
+        
+        <div id="capture" class="traits-container">
+            {% for letter, trait, emoji in results %}
+                <div class="trait-card">
+                    <div class="letter-circle">{{ letter }}</div>
+                    <div class="trait-box">
+                        <span class="trait-text">{{ trait }}</span>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+        
+        <div class="button-group">
+            <a href="/" class="back-button">Try Another Name</a>
+            {{ download_link|safe }}
+        </div>
+    </div>
+</body>
+</html>

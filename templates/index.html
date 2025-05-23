@@ -1,0 +1,23 @@
+<!-- homepage -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Complementor</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Welcome to Complementor!</h1>
+        <p>Where every letter of your name gets the spotlight it deserves.</p>
+        
+        <form action="/compliment" method="POST">
+            <div class="input-container">
+                <input type="text" id="nameInput" name="name" placeholder="Type your name here..." required>
+                <button type="submit" id="revealButton">Reveal My Name's Magic ✨</button>
+            </div>
+        </form>
+    </div>
+</body>
+</html>
