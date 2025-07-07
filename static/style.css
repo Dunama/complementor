@@ -50,7 +50,7 @@ body::after {
 }
 
 h1 {
-    font-size: 48px;
+    font-size: 60px;
     margin: 0 0 10px;
     font-weight: 600;
     color: #f7d794; /* Warm gold for headings */
@@ -204,36 +204,27 @@ button:hover::before {
         height: auto;
         min-height: 100vh;
         align-items: flex-start;
-        padding-top: 60px;
-    }
-
-    body::before {
-        width: 60px;
-        height: 40px;
-        top: 3%;
-        left: 3%;
-    }
-
-    body::after {
-        width: 80px;
-        height: 50px;
-        bottom: 5%;
-        right: 3%;
+        padding-top: 0; /* Remove top padding */
     }
 
     .container {
         max-width: 100%;
-        padding: 0 10px;
-        margin-top: 0;
+        padding-top: 0; /* Remove extra top padding */
+        margin-top: 80px; /* Lower the whole container */
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;
+        min-height: 100vh;
     }
 
     h1 {
-        font-size: 2.2rem; /* Increased header size */
-        margin: 0 0 24px 0;
+        font-size: 3.2rem;
+        margin: 0 0 28px 0; /* Remove top margin, keep bottom margin */
         text-align: center;
         line-height: 1.2;
-        animation: typing 3s steps(25, end), blink-caret 0.75s step-end infinite;
-        animation-fill-mode: forwards;
+        animation: none;
+        padding-top: 0;
     }
 
     h1.typing-complete {
@@ -242,26 +233,30 @@ button:hover::before {
     }
 
     p {
-        font-size: 16px;
-        margin: 0 0 40px;
+        font-size: 2.4rem;
+        margin: 0 0 50px 0;
         padding: 0 10px;
         text-align: center;
     }
 
     .input-container {
         max-width: 100%;
-        margin-top: 120px; /* Significantly increased to push input/button lower */
+        margin: auto;
+        margin-top: 80px;
+        margin-bottom: auto;
         display: flex;
         flex-direction: column;
-        gap: 18px;
+        gap: 22px;
         align-items: center;
+        justify-content: center;
+        min-height: 200px;
     }
 
     input[type="text"] {
         width: 100%;
         max-width: 100%;
-        padding: 14px 18px;
-        font-size: 16px;
+        padding: 18px 20px;
+        font-size: 1.2rem;
         margin: 0 auto;
         display: block;
         box-sizing: border-box;
@@ -269,9 +264,9 @@ button:hover::before {
 
     button {
         width: 100%;
-        margin-top: 48px; /* Increased from 20px to 48px to lower the button */
-        padding: 16px 24px;
-        font-size: 16px;
+        margin-top: 32px;
+        padding: 18px 24px;
+        font-size: 1.2rem;
         font-weight: 600;
         box-sizing: border-box;
     }
@@ -286,20 +281,26 @@ button:hover::before {
 
 @media (max-width: 480px) {
     body {
-        padding-top: 40px;
+        padding-top: 0;
         padding-left: 15px;
         padding-right: 15px;
     }
 
     .container {
         padding: 0 5px;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;
+        margin-top: 60px; /* Lower the container further on small screens */
     }
 
     h1 {
-        font-size: 1.7rem; /* Increased header size */
-        margin-bottom: 18px;
-        animation: typing 3s steps(25, end), blink-caret 0.75s step-end infinite;
-        animation-fill-mode: forwards;
+        font-size: 2.1rem;
+        margin: 0 0 20px 0;
+        animation: none;
+        padding-top: 0;
     }
 
     h1.typing-complete {
@@ -308,24 +309,28 @@ button:hover::before {
     }
 
     p {
-        font-size: 14px;
-        margin: 0 0 30px;
-        padding: 0 5px;
-    }
-
-    input[type="text"] {
-        padding: 12px 16px;
-        font-size: 16px;
-    }
-
-    button {
-        padding: 14px 20px;
-        font-size: 15px;
-        margin-top: 40px; /* Increased from 18px to 40px to lower the button */
+        font-size: 1.1rem;
+        margin-bottom: 36px;
     }
 
     .input-container {
-        margin-top: 100px; /* Increased to push input/button lower */
+        margin-top: 60px;
+        min-height: 160px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
+
+    input[type="text"] {
+        padding: 15px 14px;
+        font-size: 1.1rem;
+    }
+
+    button {
+        padding: 15px 18px;
+        font-size: 1.1rem;
+        margin-top: 28px;
     }
 
     .container::after {
@@ -337,21 +342,14 @@ button:hover::before {
 }
 
 @media (max-width: 360px) {
-    body {
-        padding-top: 30px;
-        padding-left: 10px;
-        padding-right: 10px;
-    }
-
     .container {
-        padding: 0;
+        margin-top: 40px;
     }
-
     h1 {
-        font-size: 1.3rem; /* Increased header size */
-        margin-bottom: 12px;
-        animation: typing 3s steps(25, end), blink-caret 0.75s step-end infinite;
-        animation-fill-mode: forwards;
+        font-size: 1.5rem;
+        margin: 0 0 14px 0;
+        animation: none;
+        padding-top: 0;
     }
 
     h1.typing-complete {
@@ -360,42 +358,28 @@ button:hover::before {
     }
 
     p {
-        font-size: 13px;
-        margin: 0 0 25px;
-        padding: 0;
-    }
-
-    input[type="text"] {
-        padding: 12px 14px;
-        font-size: 16px;
-    }
-
-    button {
-        padding: 12px 18px;
-        font-size: 14px;
-        margin-top: 32px; /* Increased from 16px to 32px to lower the button */
+        font-size: 1rem;
+        margin-bottom: 24px;
     }
 
     .input-container {
-        margin-top: 80px; /* Increased to push input/button lower */
-    }
-}
-    
-
-    p {
-        font-size: 13px;
-        margin: 0 0 25px;
-        padding: 0;
+        margin-top: 40px;
+        min-height: 120px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
     }
 
     input[type="text"] {
-        padding: 12px 14px;
-        font-size: 16px;
+        padding: 12px 10px;
+        font-size: 1rem;
     }
 
     button {
-        padding: 12px 18px;
-        font-size: 14px;
-        margin-top: 16px;
+        padding: 12px 12px;
+        font-size: 1rem;
+        margin-top: 18px;
     }
+}
 
