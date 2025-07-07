@@ -10,22 +10,71 @@
     <div class="result-container">
         <h1>{{ name }}</h1>
         <h2>Here's what each letter of your name represents:</h2>
-        
-        <div id="capture" class="traits-container">
+        <div id="capture" class="traits-container" style="position:relative;">
+            <!-- Decorative shapes inside the capture area -->
+            <div style="position:absolute;top:0;left:0;width:120px;height:70px;background:linear-gradient(135deg,#f98c44 0%,#ff6b3d 100%);border-radius:50%;opacity:0.9;z-index:0;"></div>
+            <div style="position:absolute;bottom:20px;right:10px;width:140px;height:60px;background:linear-gradient(135deg,#ffeb3b 0%,#ffd500 100%);border-radius:50%;transform:rotate(25deg);opacity:0.7;z-index:0;"></div>
             {% for letter, trait, emoji in results %}
-                <div class="trait-card">
+                <div class="trait-card" style="position:relative;z-index:1;">
                     <div class="letter-circle">{{ letter }}</div>
                     <div class="trait-box">
                         <span class="trait-text">{{ trait }}</span>
+                        <span class="trait-emoji">{{ emoji }}</span>
                     </div>
                 </div>
             {% endfor %}
         </div>
-        
         <div class="button-group">
-            <a href="/" class="back-button">Try Another Name</a>
+            <a href="/" class="back-button">Back</a>
+            <button id="download-btn" class="download-button" type="button">Download</button>
             {{ download_link|safe }}
         </div>
     </div>
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+    <script>
+        // Attach event after DOM and html2canvas are loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            var downloadBtn = document.getElementById('download-btn');
+            if (downloadBtn) {
+                downloadBtn.addEventListener('click', function() {
+                    const captureElem = document.getElementById('capture');
+                    if (!captureElem) return;
+                    // Temporarily set background for better PNG output
+                    const prevBg = captureElem.style.backgroundColor;
+                    captureElem.style.backgroundColor = "#0d2442";
+                    // Wait a tick for the style to apply
+                    setTimeout(function() {
+                        html2canvas(captureElem, {
+                            useCORS: true,
+                            backgroundColor: "#0d2442",
+                            scale: 2 // Use a fixed scale for better quality on mobile
+                        }).then(function(canvas) {
+                            captureElem.style.backgroundColor = prevBg;
+                            // Use a Blob for mobile Safari/iOS compatibility
+                            if (canvas.toBlob) {
+                                canvas.toBlob(function(blob) {
+                                    const link = document.createElement('a');
+                                    link.download = 'compliment.png';
+                                    link.href = URL.createObjectURL(blob);
+                                    document.body.appendChild(link);
+                                    link.click();
+                                    document.body.removeChild(link);
+                                    setTimeout(() => URL.revokeObjectURL(link.href), 100);
+                                }, 'image/png');
+                            } else {
+                                // Fallback for browsers without toBlob
+                                const link = document.createElement('a');
+                                link.download = 'compliment.png';
+                                link.href = canvas.toDataURL('image/png');
+                                document.body.appendChild(link);
+                                link.click();
+                                document.body.removeChild(link);
+                            }
+                        });
+                    }, 50);
+                });
+            }
+        });
+    </script>
 </body>
 </html>

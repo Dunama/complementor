@@ -4,20 +4,91 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Complementor</title>
+    <title>COMPLEMENTOR|APP</title>
     <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
+    <!-- Snow animation -->
+    <div class="snow" id="snow"></div>
+    
     <div class="container">
-        <h1>Welcome to Complementor!</h1>
-        <p>Where every letter of your name gets the spotlight it deserves.</p>
+        <h1 id="typewriter"></h1>
+        <p id="subtitle" style="opacity: 0; transition: opacity 1s ease-in;">Where every letter of your name gets the spotlight it deserves.</p>
         
-        <form action="/compliment" method="POST">
+        <form action="/compliment" method="POST" id="complimentForm">
             <div class="input-container">
                 <input type="text" id="nameInput" name="name" placeholder="Type your name here..." required>
                 <button type="submit" id="revealButton">Reveal My Name's Magic ✨</button>
             </div>
         </form>
     </div>
+
+    <script>
+        // Snow animation
+        function createSnowflake() {
+            const snowflake = document.createElement('div');
+            snowflake.classList.add('snowflake');
+            snowflake.innerHTML = '❄';
+            snowflake.style.left = Math.random() * 100 + '%';
+            snowflake.style.animationDuration = Math.random() * 3 + 2 + 's';
+            snowflake.style.opacity = Math.random();
+            snowflake.style.fontSize = Math.random() * 10 + 10 + 'px';
+            
+            document.getElementById('snow').appendChild(snowflake);
+            
+            setTimeout(() => {
+                snowflake.remove();
+            }, 5000);
+        }
+        
+        // Create snowflakes
+        setInterval(createSnowflake, 300);
+        
+        // Create initial snowflakes
+        for (let i = 0; i < 50; i++) {
+            setTimeout(createSnowflake, i * 100);
+        }
+
+        // Simple JS typing effect for h1
+        const title = document.getElementById('typewriter');
+        const subtitle = document.getElementById('subtitle');
+        const fullText = "Welcome to Complementor!";
+        let idx = 0;
+
+        function typeWriter() {
+            if (idx < fullText.length) {
+                title.textContent += fullText.charAt(idx);
+                idx++;
+                setTimeout(typeWriter, 90);
+            } else {
+                subtitle.style.opacity = '0.95';
+            }
+        }
+        typeWriter();
+
+        // Button and form logic
+        const button = document.getElementById('revealButton');
+        const complimentForm = document.getElementById('complimentForm');
+        complimentForm.addEventListener('submit', function(e) {
+            const nameValue = document.getElementById('nameInput').value.trim();
+            if (!nameValue) {
+                e.preventDefault();
+                alert('Name required!');
+                return false;
+            }
+            // Animation and delay before submit
+            e.preventDefault();
+            button.classList.add('clicked');
+            button.innerHTML = 'Processing Magic... ✨';
+            button.disabled = true;
+            setTimeout(() => {
+                button.classList.remove('clicked');
+                button.innerHTML = 'Reveal My Name\'s Magic ✨';
+                button.disabled = false;
+                complimentForm.submit();
+            }, 1000);
+        });
+    </script>
 </body>
 </html>
+    

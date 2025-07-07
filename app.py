@@ -2,12 +2,9 @@
 from flask import Flask, render_template, request
 import random
 import copy
-from download import create_download_link, register_download_routes
 
 app = Flask(__name__)
 
-# Register download routes
-register_download_routes(app)
 
 # Dictionary of compliments
 compliments = {
@@ -39,6 +36,36 @@ compliments = {
     "Z": ["Zealous", "Zesty", "Zany", "Zen-like", "Zestful", "Zoom-focused"]
 }
 
+# Dictionary of emojis (increased variety for each letter)
+emojis = {
+    "A": ["🌟", "🦄", "✨", "😃", "💫", "🥇", "🍏", "🧩", "🦋", "🎈"],
+    "B": ["🎉", "🌈", "😎", "💡", "🎈", "🦋", "🍌", "🧸", "🦄", "🎂"],
+    "C": ["🌻", "🍀", "🎨", "🧠", "🦸", "🌊", "🍫", "🦜", "🧁", "🎃"],
+    "D": ["🔥", "💪", "🎯", "🌞", "🏆", "🦅", "🍩", "🦖", "🧭", "🎲"],
+    "E": ["🌹", "🎶", "🦉", "🧚", "🦢", "🌼", "🍆", "🦅", "🧝", "🎗️"],
+    "F": ["🍀", "🦊", "🎁", "🌸", "🧩", "🦄", "🍟", "🦩", "🧚", "🎏"],
+    "G": ["🌟", "🍇", "🦒", "🎸", "🧸", "🌳", "🍀", "🦍", "🧤", "🎻"],
+    "H": ["🏅", "🦔", "🎩", "🌺", "🧲", "🦉", "🍯", "🦛", "🧡", "🎃"],
+    "I": ["🦋", "🌈", "🧠", "🎇", "🦄", "🌟", "🍦", "🦑", "🧊", "🎐"],
+    "J": ["🎷", "🦘", "🎊", "🧃", "🦄", "🎺", "🍏", "🦡", "🧩", "🎲"],
+    "K": ["🥝", "🦘", "🎋", "🧿", "🦄", "🎠", "🍪", "🦏", "🧀", "🎋"],
+    "L": ["🍋", "🦁", "🌙", "🧡", "🦄", "🌲", "🍭", "🦙", "🧊", "🎶"],
+    "M": ["🌝", "🦣", "🎵", "🧩", "🦄", "🌻", "🍈", "🦡", "🧁", "🎹"],
+    "N": ["🌃", "🦑", "🎶", "🧸", "🦄", "🌵", "🍜", "🦏", "🧢", "🎷"],
+    "O": ["🌞", "🦉", "🎱", "🧡", "🦄", "🍊", "🍩", "🦦", "🧅", "🎸"],
+    "P": ["🍍", "🦚", "🎨", "🧸", "🦄", "🥧", "🍕", "🦜", "🧃", "🎭"],
+    "Q": ["👑", "🦄", "🎸", "🧩", "🦄", "🌟", "🍳", "🦆", "🧞", "🎯"],
+    "R": ["🌈", "🦏", "🎻", "🧡", "🦄", "🌹", "🍎", "🦝", "🧢", "🎀"],
+    "S": ["🌞", "🦥", "🎷", "🧡", "🦄", "🌸", "🍓", "🦦", "🧦", "🎸"],
+    "T": ["🌴", "🦃", "🎺", "🧡", "🦄", "🌻", "🍅", "🦖", "🧵", "🎩"],
+    "U": ["☂️", "🦄", "🎵", "🧡", "🦄", "🌊", "🍇", "🦙", "🧇", "🎷"],
+    "V": ["🌋", "🦚", "🎻", "🧡", "🦄", "🌟", "🍉", "🦘", "🧛", "🎻"],
+    "W": ["🌊", "🦓", "🎷", "🧡", "🦄", "🌻", "🍉", "🦢", "🧇", "🎩"],
+    "X": ["❌", "🦄", "🎲", "🧩", "🦄", "🌟", "🍫", "🦓", "🧊", "🎮"],
+    "Y": ["🌱", "🦓", "🎸", "🧡", "🦄", "🌼", "🍋", "🦒", "🧁", "🎷"],
+    "Z": ["⚡", "🦓", "🎶", "🧡", "🦄", "🌟", "🍕", "🦓", "🧢", "🎺"]
+}
+
 
 @app.route("/")
 def home():
@@ -54,52 +81,55 @@ def compliment(name=None, return_results=False):
         
     results = []
     
-    # Keep track of used compliments for each letter
+    # Keep track of used compliments and emojis for each letter
     used_compliments = {}
+    used_emojis = {}
     # Count how many times each letter appears in the name
     letter_count = {}
     
-    # Count letters first to check if we have enough compliments for each letter
+    # Count letters first to check if we have enough compliments/emojis for each letter
     for letter in name:
         if letter in compliments and letter != " ":
             letter_count[letter] = letter_count.get(letter, 0) + 1
     
-    # For each unique letter, make a copy of available compliments
+    # For each unique letter, make a copy of available compliments and emojis
     for letter in letter_count:
-        # If we don't have enough unique compliments for this letter, we'll have to allow repeats
-        if letter_count[letter] > len(compliments[letter]):
-            used_compliments[letter] = []
-        else:
-            used_compliments[letter] = []
+        used_compliments[letter] = []
+        used_emojis[letter] = []
     
     # Handle each letter in the name, skipping characters not in our dictionary
     for letter in name:
         if letter in compliments:
-            available_compliments = [c for c in compliments[letter] if c not in used_compliments.get(letter, [])]
-            
-            # If we've used all compliments for this letter, reset the used list
-            # This only happens if there are more instances of the letter than available compliments
+            # Compliment selection without repetition
+            available_compliments = [c for c in compliments[letter] if c not in used_compliments[letter]]
             if not available_compliments:
                 used_compliments[letter] = []
-                available_compliments = compliments[letter]
-            
-            # Select a random compliment from the available ones
+                available_compliments = compliments[letter][:]
             selected_compliment = random.choice(available_compliments)
-            used_compliments.setdefault(letter, []).append(selected_compliment)
+            used_compliments[letter].append(selected_compliment)
+
+            # Emoji selection without repetition
+            available_emojis = [e for e in emojis.get(letter, ["✨"]) if e not in used_emojis[letter]]
+            if not available_emojis:
+                used_emojis[letter] = []
+                available_emojis = emojis.get(letter, ["✨"])[:]
+            selected_emoji = random.choice(available_emojis)
+            used_emojis[letter].append(selected_emoji)
+
+            results.append((letter, selected_compliment, selected_emoji))
         elif letter == " ":
             results.append((letter, "", ""))
-    
+
     # If no valid letters were found, provide a default message
     if not results:
         results = [("", "Your name is unique! Try entering letters A-Z.", "✨")]
-    
+
     if return_results:
         return results
-    
-    # Generate the download link with Python instead of JavaScript
-    download_link = create_download_link(name, results)
-    
-    return render_template("result.html", name=name, results=results, download_link=download_link)
 
+    return render_template("result.html", name=name, results=results)
+
+if __name__ == "__main__":
+    app.run(debug=True)
 if __name__ == "__main__":
     app.run(debug=True)

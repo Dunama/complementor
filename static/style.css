@@ -54,6 +54,16 @@ h1 {
     margin: 0 0 10px;
     font-weight: 600;
     color: #f7d794; /* Warm gold for headings */
+    overflow: visible;
+    border-right: none;
+    white-space: normal;
+    animation: none;
+    padding-top: 20px;
+}
+
+h1.typing-complete {
+    border-right: none;
+    animation: none;
 }
 
 p {
@@ -96,13 +106,52 @@ button {
     background: linear-gradient(90deg, #ff9900, #ff3c8d, #a24fff);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
     cursor: pointer;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-  }
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
   
   button:hover {
     transform: translateY(-2px);
     box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
   }
+
+  button:active {
+    transform: translateY(1px) scale(0.98);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+}
+
+button.clicked {
+    background: linear-gradient(90deg, #4caf50, #2196f3, #9c27b0);
+    animation: pulse 0.6s ease-in-out;
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    transition: left 0.5s;
+}
+
+button:hover::before {
+    left: 100%;
+}
 
 .container::after {
     content: '';
@@ -115,3 +164,238 @@ button {
     border-radius: 50%;
     z-index: -1;
 }
+
+/* Snow animation */
+.snow {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    overflow: hidden;
+    z-index: -1;
+}
+
+.snowflake {
+    position: absolute;
+    top: -10px;
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 1em;
+    animation: fall linear infinite;
+    filter: blur(1px);
+}
+
+@keyframes fall {
+    0% {
+        transform: translateY(-100vh) rotate(0deg);
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(100vh) rotate(360deg);
+        opacity: 0;
+    }
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+    body {
+        padding: 20px 20px 40px 20px;
+        height: auto;
+        min-height: 100vh;
+        align-items: flex-start;
+        padding-top: 60px;
+    }
+
+    body::before {
+        width: 60px;
+        height: 40px;
+        top: 3%;
+        left: 3%;
+    }
+
+    body::after {
+        width: 80px;
+        height: 50px;
+        bottom: 5%;
+        right: 3%;
+    }
+
+    .container {
+        max-width: 100%;
+        padding: 0 10px;
+        margin-top: 0;
+    }
+
+    h1 {
+        font-size: 2.2rem; /* Increased header size */
+        margin: 0 0 24px 0;
+        text-align: center;
+        line-height: 1.2;
+        animation: typing 3s steps(25, end), blink-caret 0.75s step-end infinite;
+        animation-fill-mode: forwards;
+    }
+
+    h1.typing-complete {
+        border-right: none;
+        animation: none;
+    }
+
+    p {
+        font-size: 16px;
+        margin: 0 0 40px;
+        padding: 0 10px;
+        text-align: center;
+    }
+
+    .input-container {
+        max-width: 100%;
+        margin-top: 120px; /* Significantly increased to push input/button lower */
+        display: flex;
+        flex-direction: column;
+        gap: 18px;
+        align-items: center;
+    }
+
+    input[type="text"] {
+        width: 100%;
+        max-width: 100%;
+        padding: 14px 18px;
+        font-size: 16px;
+        margin: 0 auto;
+        display: block;
+        box-sizing: border-box;
+    }
+
+    button {
+        width: 100%;
+        margin-top: 48px; /* Increased from 20px to 48px to lower the button */
+        padding: 16px 24px;
+        font-size: 16px;
+        font-weight: 600;
+        box-sizing: border-box;
+    }
+
+    .container::after {
+        width: 120px;
+        height: 120px;
+        bottom: -60px;
+        right: -40px;
+    }
+}
+
+@media (max-width: 480px) {
+    body {
+        padding-top: 40px;
+        padding-left: 15px;
+        padding-right: 15px;
+    }
+
+    .container {
+        padding: 0 5px;
+    }
+
+    h1 {
+        font-size: 1.7rem; /* Increased header size */
+        margin-bottom: 18px;
+        animation: typing 3s steps(25, end), blink-caret 0.75s step-end infinite;
+        animation-fill-mode: forwards;
+    }
+
+    h1.typing-complete {
+        border-right: none;
+        animation: none;
+    }
+
+    p {
+        font-size: 14px;
+        margin: 0 0 30px;
+        padding: 0 5px;
+    }
+
+    input[type="text"] {
+        padding: 12px 16px;
+        font-size: 16px;
+    }
+
+    button {
+        padding: 14px 20px;
+        font-size: 15px;
+        margin-top: 40px; /* Increased from 18px to 40px to lower the button */
+    }
+
+    .input-container {
+        margin-top: 100px; /* Increased to push input/button lower */
+    }
+
+    .container::after {
+        width: 120px;
+        height: 120px;
+        bottom: -60px;
+        right: -40px;
+    }
+}
+
+@media (max-width: 360px) {
+    body {
+        padding-top: 30px;
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+
+    .container {
+        padding: 0;
+    }
+
+    h1 {
+        font-size: 1.3rem; /* Increased header size */
+        margin-bottom: 12px;
+        animation: typing 3s steps(25, end), blink-caret 0.75s step-end infinite;
+        animation-fill-mode: forwards;
+    }
+
+    h1.typing-complete {
+        border-right: none;
+        animation: none;
+    }
+
+    p {
+        font-size: 13px;
+        margin: 0 0 25px;
+        padding: 0;
+    }
+
+    input[type="text"] {
+        padding: 12px 14px;
+        font-size: 16px;
+    }
+
+    button {
+        padding: 12px 18px;
+        font-size: 14px;
+        margin-top: 32px; /* Increased from 16px to 32px to lower the button */
+    }
+
+    .input-container {
+        margin-top: 80px; /* Increased to push input/button lower */
+    }
+}
+    
+
+    p {
+        font-size: 13px;
+        margin: 0 0 25px;
+        padding: 0;
+    }
+
+    input[type="text"] {
+        padding: 12px 14px;
+        font-size: 16px;
+    }
+
+    button {
+        padding: 12px 18px;
+        font-size: 14px;
+        margin-top: 16px;
+    }
+
