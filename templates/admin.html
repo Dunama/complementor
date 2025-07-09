@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Complementor</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='admin.css') }}">
+</head>
+<body>
+    <div class="snow" id="snow"></div>
+    <div class="admin-container">
+        <h1>📊 Complementor Admin Dashboard</h1>
+        
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3>Total Users</h3>
+                <div class="stat-number">{{ stats.total_users }}</div>
+            </div>
+            <div class="stat-card">
+                <h3>Today's Users</h3>
+                <div class="stat-number">{{ stats.today_users }}</div>
+            </div>
+            <div class="stat-card">
+                <h3>Total Sessions</h3>
+                <div class="stat-number">{{ stats.total_sessions }}</div>
+            </div>
+        </div>
+        
+        <div class="recent-sessions">
+            <h2>Recent Sessions</h2>
+            <div class="sessions-table">
+                {% for session in stats.recent_sessions %}
+                <div class="session-row">
+                    <div class="session-name">{{ session.name }}</div>
+                    <div class="session-time">{{ session.timestamp }}</div>
+                    <div class="session-ip">{{ session.ip }}</div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        
+        <div class="admin-actions">
+            <a href="/?admin=true" class="action-btn">View App</a>
+            <a href="/admin?token={{ token }}" class="action-btn refresh-btn">Refresh Data</a>
+            <a href="/" class="action-btn back-btn">Exit Admin</a>
+        </div>
+    </div>
+    
+    <script>
+        // Snow animation (same as index.html)
+        function createSnowflake() {
+            const snowflake = document.createElement('div');
+            snowflake.classList.add('snowflake');
+            snowflake.innerHTML = '❄';
+            snowflake.style.left = Math.random() * 100 + '%';
+            snowflake.style.animationDuration = Math.random() * 3 + 2 + 's';
+            snowflake.style.opacity = Math.random();
+            snowflake.style.fontSize = Math.random() * 10 + 10 + 'px';
+            
+            document.getElementById('snow').appendChild(snowflake);
+            
+            setTimeout(() => {
+                snowflake.remove();
+            }, 5000);
+        }
+        
+        // Create snowflakes
+        setInterval(createSnowflake, 300);
+        
+        // Create initial snowflakes
+        for (let i = 0; i < 50; i++) {
+            setTimeout(createSnowflake, i * 100);
+        }
+        
+        // Auto-refresh every 30 seconds
+        setTimeout(() => {
+            window.location.reload();
+        }, 30000);
+    </script>
+</body>
+</html>

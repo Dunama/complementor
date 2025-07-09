@@ -2,9 +2,36 @@
 from flask import Flask, render_template, request
 import random
 import copy
+import os
+from datetime import datetime
 
 app = Flask(__name__)
 
+
+
+ADMIN_TOKEN = os.getenv('ADMIN_TOKEN')
+
+# Simple in-memory storage for tracking (in production, use a database)
+app_stats = {
+    'total_users': 0,
+    'sessions': [],
+    'daily_stats': {}
+}
+
+def log_user_session(name):
+    """Log a user session"""
+    today = datetime.now().strftime('%Y-%m-%d')
+    app_stats['total_users'] += 1
+    app_stats['sessions'].append({
+        'name': name,
+        'timestamp': datetime.now().isoformat(),
+        'date': today
+    })
+    
+    # Update daily stats
+    if today not in app_stats['daily_stats']:
+        app_stats['daily_stats'][today] = 0
+    app_stats['daily_stats'][today] += 1
 
 # Dictionary of compliments
 compliments = {
@@ -73,9 +100,10 @@ def home():
 
 @app.route("/compliment", methods=["POST"])
 def compliment(name=None, return_results=False):
-
     if name is None:
         name = request.form.get("name", "").upper()
+        # Log the user session
+        log_user_session(name)
     else:
         name = name.upper()
         
@@ -129,7 +157,31 @@ def compliment(name=None, return_results=False):
 
     return render_template("result.html", name=name, results=results)
 
-if __name__ == "__main__":
-    app.run(debug=True)
+@app.route("/admin")
+def admin_login():
+    return render_template('admin_login.html')
+
+@app.route("/admin/dashboard", methods=["GET", "POST"])
+def admin_dashboard():
+    if request.method == "POST":
+        token = request.form.get("token")
+        if token != ADMIN_TOKEN:
+            return render_template('admin_login.html', error="Invalid admin token")
+    else:
+        # Check for token in query params
+        token = request.args.get("token")
+        if token != ADMIN_TOKEN:
+            return render_template('admin_login.html', error="Access denied")
+    
+    # Calculate additional stats
+    recent_sessions = app_stats['sessions'][-10:]  # Last 10 sessions
+    today = datetime.now().strftime('%Y-%m-%d')
+    today_count = app_stats['daily_stats'].get(today, 0)
+    
+    return render_template('admin_dashboard.html', 
+                         stats=app_stats, 
+                         recent_sessions=recent_sessions,
+                         today_count=today_count)
+
 if __name__ == "__main__":
     app.run(debug=True)

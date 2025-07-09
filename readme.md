@@ -14,7 +14,7 @@ Complementor is a fun web app that generates a unique compliment for each letter
 ## PC view
 ![alt text](image.png)
 ## Mobile view
-![alt text](image-1.png),
+![alt text](image-1.png),![alt text](image-4.png)
 
 
 
