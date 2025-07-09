@@ -47,10 +47,15 @@ body::after {
     padding: 20px;
     z-index: 1;
     position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
 }
 
 h1 {
-    font-size: 60px;
+    font-size: 80px; /* Increased font size */
     margin: 0 0 10px;
     font-weight: 600;
     color: #f7d794; /* Warm gold for headings */
@@ -58,7 +63,8 @@ h1 {
     border-right: none;
     white-space: normal;
     animation: none;
-    padding-top: 20px;
+    padding-top: 0;
+    text-align: center;
 }
 
 h1.typing-complete {
@@ -203,27 +209,26 @@ button:hover::before {
         padding: 20px 20px 40px 20px;
         height: auto;
         min-height: 100vh;
-        align-items: flex-start;
-        padding-top: 0; /* Remove top padding */
+        align-items: center;
+        justify-content: center;
+        padding-top: 0;
     }
 
     .container {
         max-width: 100%;
-        padding-top: 0; /* Remove extra top padding */
-        margin-top: 80px; /* Lower the whole container */
+        margin-top: 0;
+        padding-top: 0;
         display: flex;
         flex-direction: column;
         align-items: center;
-        justify-content: flex-start;
+        justify-content: center;
         min-height: 100vh;
     }
 
     h1 {
-        font-size: 3.2rem;
-        margin: 0 0 28px 0; /* Remove top margin, keep bottom margin */
+        font-size: 3.5rem;
+        margin: 0 0 28px 0;
         text-align: center;
-        line-height: 1.2;
-        animation: none;
         padding-top: 0;
     }
 
@@ -292,14 +297,14 @@ button:hover::before {
         display: flex;
         flex-direction: column;
         align-items: center;
-        justify-content: flex-start;
-        margin-top: 60px; /* Lower the container further on small screens */
+        justify-content: center;
+        margin-top: 0;
+        padding-top: 0;
     }
-
     h1 {
-        font-size: 2.1rem;
+        font-size: 2.3rem;
         margin: 0 0 20px 0;
-        animation: none;
+        text-align: center;
         padding-top: 0;
     }
 
@@ -343,12 +348,14 @@ button:hover::before {
 
 @media (max-width: 360px) {
     .container {
-        margin-top: 40px;
+        margin-top: 0;
+        justify-content: center;
+        padding-top: 0;
     }
     h1 {
-        font-size: 1.5rem;
+        font-size: 1.7rem;
         margin: 0 0 14px 0;
-        animation: none;
+        text-align: center;
         padding-top: 0;
     }
 

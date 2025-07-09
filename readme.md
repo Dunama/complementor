@@ -1,6 +1,6 @@
 # Complementor
 
-Complementor is a fun web app that generates a unique compliment for each letter of your name, complete with matching emojis and a beautiful animated background. The app is built with Flask and features a modern, mobile-friendly UI with a snow animation and typewriter effect.
+Complementor is a fun web app that generates a unique compliment for each letter of your name, complete with matching emojis and a beautiful animated background. The app is built with Flask and features a modern, mobile-friendly UI with a snow animation and typewriter effect.It was made to implement the use of if-else statements and loops to improve on oneself through building scalable projects to boost ones morale 💪🦅
 
 ## Features
 
@@ -12,7 +12,9 @@ Complementor is a fun web app that generates a unique compliment for each letter
 - **No Repeats:** Compliments and emojis do not repeat for the same letter in a name.
 
 ## PC view
-![alt text](image.png) 
+![alt text](image.png)
+## Mobile view
+![alt text](image-1.png),
 
 
 

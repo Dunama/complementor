@@ -3,19 +3,54 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Name Analysis</title>
+    <title>complement</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='result.css') }}">
+    <style>
+        .snow {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            overflow: hidden;
+            z-index: 0;
+        }
+        .result-container {
+            position: relative;
+            z-index: 1;
+        }
+        .snowflake {
+            position: absolute;
+            top: -10px;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 1em;
+            filter: blur(1px);
+            animation: fall linear infinite;
+        }
+        @keyframes fall {
+            0% {
+                transform: translateY(-100vh) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+    </style>
 </head>
 <body>
+    <div class="snow" id="snow"></div>
     <div class="result-container">
         <h1>{{ name }}</h1>
         <h2>Here's what each letter of your name represents:</h2>
-        <div id="capture" class="traits-container" style="position:relative;">
-            <!-- Decorative shapes inside the capture area -->
-            <div style="position:absolute;top:0;left:0;width:120px;height:70px;background:linear-gradient(135deg,#f98c44 0%,#ff6b3d 100%);border-radius:50%;opacity:0.9;z-index:0;"></div>
-            <div style="position:absolute;bottom:20px;right:10px;width:140px;height:60px;background:linear-gradient(135deg,#ffeb3b 0%,#ffd500 100%);border-radius:50%;transform:rotate(25deg);opacity:0.7;z-index:0;"></div>
+        <div id="capture" style="position:relative; background: linear-gradient(135deg, #0d2442 0%, #0055ff 100%); border-radius:32px; box-shadow:0 8px 32px 0 rgba(31,38,135,0.37); padding:32px 12px 24px 12px; margin:0 auto 24px auto; width:100%; max-width:420px; min-width:260px; min-height:10px; display:flex; flex-direction:column; align-items:center; justify-content:center;">
+            <!-- Curvy shapes inside the capture area -->
+            <div style="position:absolute;top:0;left:0;width:160px;height:80px;background:linear-gradient(135deg,#f98c44 0%,#ff6b3d 100%);border-radius:80px 100px 100px 80px/60px 80px 80px 60px;opacity:0.9;z-index:0;"></div>
+            <div style="position:absolute;bottom:0;right:0;width:220px;height:100px;background:linear-gradient(135deg,#ffeb3b 0%,#ffd500 100%);border-radius:120px 120px 120px 120px/80px 80px 80px 80px;transform:rotate(15deg);opacity:0.7;z-index:0;"></div>
             {% for letter, trait, emoji in results %}
-                <div class="trait-card" style="position:relative;z-index:1;">
+                <div class="trait-card" style="position:relative;z-index:1; width:100%;">
                     <div class="letter-circle">{{ letter }}</div>
                     <div class="trait-box">
                         <span class="trait-text">{{ trait }}</span>
@@ -32,25 +67,41 @@
     </div>
     <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
     <script>
-        // Attach event after DOM and html2canvas are loaded
+        // Snow animation (same as index.html)
+        function createSnowflake() {
+            const snowflake = document.createElement('div');
+            snowflake.classList.add('snowflake');
+            snowflake.innerHTML = '❄';
+            snowflake.style.left = Math.random() * 100 + '%';
+            snowflake.style.animationDuration = Math.random() * 3 + 2 + 's';
+            snowflake.style.opacity = Math.random();
+            snowflake.style.fontSize = Math.random() * 10 + 10 + 'px';
+            document.getElementById('snow').appendChild(snowflake);
+            setTimeout(() => {
+                snowflake.remove();
+            }, 5000);
+        }
+        setInterval(createSnowflake, 300);
+        for (let i = 0; i < 50; i++) {
+            setTimeout(createSnowflake, i * 100);
+        }
+
+        // Download button logic (unchanged)
         document.addEventListener('DOMContentLoaded', function() {
             var downloadBtn = document.getElementById('download-btn');
             if (downloadBtn) {
                 downloadBtn.addEventListener('click', function() {
                     const captureElem = document.getElementById('capture');
                     if (!captureElem) return;
-                    // Temporarily set background for better PNG output
                     const prevBg = captureElem.style.backgroundColor;
                     captureElem.style.backgroundColor = "#0d2442";
-                    // Wait a tick for the style to apply
                     setTimeout(function() {
                         html2canvas(captureElem, {
                             useCORS: true,
                             backgroundColor: "#0d2442",
-                            scale: 2 // Use a fixed scale for better quality on mobile
+                            scale: 2
                         }).then(function(canvas) {
                             captureElem.style.backgroundColor = prevBg;
-                            // Use a Blob for mobile Safari/iOS compatibility
                             if (canvas.toBlob) {
                                 canvas.toBlob(function(blob) {
                                     const link = document.createElement('a');
@@ -62,7 +113,6 @@
                                     setTimeout(() => URL.revokeObjectURL(link.href), 100);
                                 }, 'image/png');
                             } else {
-                                // Fallback for browsers without toBlob
                                 const link = document.createElement('a');
                                 link.download = 'compliment.png';
                                 link.href = canvas.toDataURL('image/png');
