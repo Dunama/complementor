@@ -1,10 +1,13 @@
 # main flask app
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, send_file
 from flask_sqlalchemy import SQLAlchemy
 import random
 import copy
 import os
 from datetime import datetime, date
+from PIL import Image, ImageDraw, ImageFont
+import io
+import textwrap
 
 app = Flask(__name__)
 
@@ -103,34 +106,34 @@ compliments = {
     "Z": ["Zealous", "Zesty", "Zany", "Zen-like", "Zestful", "Zoom-focused"]
 }
 
-# Dictionary of emojis (increased variety for each letter)
+# Dictionary of emojis (rearranged to match compliments better)
 emojis = {
-    "A": ["🌟", "🦄", "✨", "😃", "💫", "🥇", "🍏", "🧩", "🦋", "🎈"],
-    "B": ["🎉", "🌈", "😎", "💡", "🎈", "🦋", "🍌", "🧸", "🦄", "🎂"],
-    "C": ["🌻", "🍀", "🎨", "🧠", "🦸", "🌊", "🍫", "🦜", "🧁", "🎃"],
-    "D": ["🔥", "💪", "🎯", "🌞", "🏆", "🦅", "🍩", "🦖", "🧭", "🎲"],
-    "E": ["🌹", "🎶", "🦉", "🧚", "🦢", "🌼", "🍆", "🦅", "🧝", "🎗️"],
-    "F": ["🍀", "🦊", "🎁", "🌸", "🧩", "🦄", "🍟", "🦩", "🧚", "🎏"],
-    "G": ["🌟", "🍇", "🦒", "🎸", "🧸", "🌳", "🍀", "🦍", "🧤", "🎻"],
-    "H": ["🏅", "🦔", "🎩", "🌺", "🧲", "🦉", "🍯", "🦛", "🧡", "🎃"],
-    "I": ["🦋", "🌈", "🧠", "🎇", "🦄", "🌟", "🍦", "🦑", "🧊", "🎐"],
-    "J": ["🎷", "🦘", "🎊", "🧃", "🦄", "🎺", "🍏", "🦡", "🧩", "🎲"],
-    "K": ["🥝", "🦘", "🎋", "🧿", "🦄", "🎠", "🍪", "🦏", "🧀", "🎋"],
-    "L": ["🍋", "🦁", "🌙", "🧡", "🦄", "🌲", "🍭", "🦙", "🧊", "🎶"],
-    "M": ["🌝", "🦣", "🎵", "🧩", "🦄", "🌻", "🍈", "🦡", "🧁", "🎹"],
-    "N": ["🌃", "🦑", "🎶", "🧸", "🦄", "🌵", "🍜", "🦏", "🧢", "🎷"],
-    "O": ["🌞", "🦉", "🎱", "🧡", "🦄", "🍊", "🍩", "🦦", "🧅", "🎸"],
-    "P": ["🍍", "🦚", "🎨", "🧸", "🦄", "🥧", "🍕", "🦜", "🧃", "🎭"],
-    "Q": ["👑", "🦄", "🎸", "🧩", "🦄", "🌟", "🍳", "🦆", "🧞", "🎯"],
-    "R": ["🌈", "🦏", "🎻", "🧡", "🦄", "🌹", "🍎", "🦝", "🧢", "🎀"],
-    "S": ["🌞", "🦥", "🎷", "🧡", "🦄", "🌸", "🍓", "🦦", "🧦", "🎸"],
-    "T": ["🌴", "🦃", "🎺", "🧡", "🦄", "🌻", "🍅", "🦖", "🧵", "🎩"],
-    "U": ["☂️", "🦄", "🎵", "🧡", "🦄", "🌊", "🍇", "🦙", "🧇", "🎷"],
-    "V": ["🌋", "🦚", "🎻", "🧡", "🦄", "🌟", "🍉", "🦘", "🧛", "🎻"],
-    "W": ["🌊", "🦓", "🎷", "🧡", "🦄", "🌻", "🍉", "🦢", "🧇", "🎩"],
-    "X": ["❌", "🦄", "🎲", "🧩", "🦄", "🌟", "🍫", "🦓", "🧊", "🎮"],
-    "Y": ["🌱", "🦓", "🎸", "🧡", "🦄", "🌼", "🍋", "🦒", "🧁", "🎷"],
-    "Z": ["⚡", "🦓", "🎶", "🧡", "🦄", "🌟", "🍕", "🦓", "🧢", "🎺"]
+    "A": ["🌟", "🏆", "🎯", "💪", "❤️", "✨", "🚀", "👑", "🦅", "🔥"],  # Admirable, Awesome, Ambitious, Amazing, Affectionate, Astounding
+    "B": ["🧠", "🦁", "💖", "🌺", "☀️", "⚖️", "✨", "🎨", "🌟", "💎"],  # Brilliant, Bold, Benevolent, Beautiful, Bright, Balanced
+    "C": ["✨", "🎨", "💝", "😊", "🦁", "💪", "🌟", "🎭", "🎪", "🏆"],  # Charismatic, Creative, Compassionate, Charming, Courageous, Capable
+    "D": ["🦁", "🎯", "⚡", "🌟", "🛡️", "💪", "🚀", "🌈", "🔥", "🏔️"],  # Daring, Dedicated, Dynamic, Delightful, Dependable, Determined
+    "E": ["👑", "🏆", "💖", "⚡", "🌟", "📣", "🌹", "🦋", "💎", "🎪"],  # Elegant, Excellent, Empathetic, Energetic, Exceptional, Encouraging
+    "F": ["🌟", "🦁", "🤝", "🎉", "🤗", "🌿", "✨", "💖", "🎈", "🌈"],  # Fabulous, Fearless, Friendly, Fantastic, Faithful, Flexible
+    "G": ["🎁", "🙏", "🎁", "💯", "👑", "🌍", "💖", "🌟", "🤝", "🌱"],  # Generous, Gracious, Gifted, Genuine, Glorious, Grounded
+    "H": ["💯", "🙏", "🌟", "💪", "🤝", "🎵", "❤️", "⚖️", "🌈", "🕊️"],  # Honest, Humble, Hopeful, Hardworking, Helpful, Harmonious
+    "I": ["🌟", "💡", "🔥", "👑", "🧠", "🚀", "✨", "💪", "🎯", "🦄"],  # Incredible, Innovative, Inspiring, Impressive, Intelligent, Independent
+    "J": ["😊", "⚖️", "🎉", "😄", "🧠", "😲", "🌟", "🎪", "💖", "🎈"],  # Joyful, Just, Jubilant, Jolly, Judicious, Jaw-dropping
+    "K": ["💖", "📚", "🎯", "👑", "🌈", "⚡", "🤝", "💡", "🦋", "🌟"],  # Kind-hearted, Knowledgeable, Keen, Kingly, Kaleidoscopic, Kinetic
+    "L": ["💝", "🤝", "👑", "✨", "🦁", "🧠", "❤️", "🏆", "🌟", "💖"],  # Loving, Loyal, Legendary, Luminous, Leader-like, Logical
+    "M": ["👑", "🚀", "🧘", "🌟", "🔍", "💪", "✨", "🦁", "🎯", "🏆"],  # Magnificent, Motivated, Mindful, Marvelous, Meticulous, Mighty
+    "N": ["👑", "🌱", "🏆", "🤝", "✨", "🙏", "🎯", "💖", "⚖️", "🌟"],  # Noble, Nurturing, Noteworthy, Neighborly, Neat, Nonjudgmental
+    "O": ["🌟", "☀️", "💡", "🧠", "👁️", "📋", "🏆", "🚀", "🎯", "✨"],  # Outstanding, Optimistic, Original, Open-minded, Observant, Organized
+    "P": ["🙏", "🔥", "💪", "💎", "😊", "🚀", "🌟", "🎯", "💖", "🦋"],  # Patient, Passionate, Powerful, Polished, Pleasant, Pioneering
+    "Q": ["🧠", "🤫", "👑", "🎭", "🎯", "❓", "⚡", "💡", "🌟", "🔍"],  # Quick-witted, Quietly-confident, Quintessential, Quirky, Quality-focused, Questioning
+    "R": ["🦋", "✨", "🛡️", "🌟", "💡", "🙏", "🚀", "💪", "🔥", "🏆"],  # Resilient, Radiant, Reliable, Remarkable, Resourceful, Respectful
+    "S": ["💪", "💖", "🌟", "🧠", "🤝", "💎", "🏆", "🎯", "🚀", "✨"],  # Strong, Sincere, Spectacular, Smart, Supportive, Sophisticated
+    "T": ["🌟", "🤝", "💭", "💪", "🌱", "🎉", "🏆", "💖", "🎯", "🚀"],  # Talented, Trustworthy, Thoughtful, Tenacious, Thriving, Terrific
+    "U": ["🦄", "🤗", "🚀", "😊", "🌟", "👑", "💖", "⚡", "🔥", "✨"],  # Unique, Understanding, Unstoppable, Upbeat, Uplifting, Ultimate
+    "V": ["🌈", "👑", "🔮", "🦁", "🎭", "🏆", "⚡", "🚀", "💪", "🌟"],  # Vibrant, Virtuous, Visionary, Valiant, Versatile, Victorious
+    "W": ["🧠", "💖", "🌟", "🤗", "🌍", "😄", "🦉", "💡", "🌈", "✨"],  # Wise, Warm-hearted, Wonderful, Welcoming, Well-rounded, Witty
+    "X": ["🤝", "🌟", "🏆", "🎭", "👑", "🎉", "⚡", "🚀", "💖", "✨"],  # Xenial, Xtraordinary, Xceptional, Xpressive, Xemplary, Xciting
+    "Y": ["🌱", "🤝", "🏆", "📚", "✅", "💖", "😊", "🌟", "⚡", "🎯"],  # Youthful, Yielding, Yearning-for-excellence, Yen-for-knowledge, Yes-minded, Yummy-hearted
+    "Z": ["🔥", "⚡", "🎭", "🧘", "🌟", "🎯", "🚀", "💪", "🏆", "✨"]   # Zealous, Zesty, Zany, Zen-like, Zestful, Zoom-focused
 }
 
 
@@ -249,6 +252,85 @@ def admin_dashboard():
     except Exception as e:
         print(f"Error in admin dashboard: {e}")
         return f"Error: {str(e)}", 500
+
+@app.route("/download/<name>")
+def download_compliment(name):
+    """Generate and download compliment results as an image"""
+    try:
+        # Get the compliment results for the name
+        results = compliment(name.upper(), return_results=True)
+        
+        # Create image
+        img_width, img_height = 800, 600
+        background_color = (255, 255, 255)  # White background
+        text_color = (51, 51, 51)  # Dark gray text
+        
+        # Create image
+        img = Image.new('RGB', (img_width, img_height), background_color)
+        draw = ImageDraw.Draw(img)
+        
+        # Try to use a nice font, fallback to default if not available
+        try:
+            title_font = ImageFont.truetype("arial.ttf", 36)
+            name_font = ImageFont.truetype("arial.ttf", 28)
+            compliment_font = ImageFont.truetype("arial.ttf", 24)
+        except:
+            title_font = ImageFont.load_default()
+            name_font = ImageFont.load_default()
+            compliment_font = ImageFont.load_default()
+        
+        # Draw title
+        title = "Your Personalized Compliments"
+        title_bbox = draw.textbbox((0, 0), title, font=title_font)
+        title_width = title_bbox[2] - title_bbox[0]
+        draw.text(((img_width - title_width) // 2, 50), title, fill=text_color, font=title_font)
+        
+        # Draw name
+        name_text = f"Hello, {name.title()}!"
+        name_bbox = draw.textbbox((0, 0), name_text, font=name_font)
+        name_width = name_bbox[2] - name_bbox[0]
+        draw.text(((img_width - name_width) // 2, 100), name_text, fill=text_color, font=name_font)
+        
+        # Draw compliments
+        y_position = 160
+        for letter, compliment, emoji in results:
+            if letter and compliment:  # Skip empty entries
+                compliment_text = f"{letter}: {compliment} {emoji}"
+                
+                # Wrap text if it's too long
+                wrapped_text = textwrap.fill(compliment_text, width=50)
+                lines = wrapped_text.split('\n')
+                
+                for line in lines:
+                    line_bbox = draw.textbbox((0, 0), line, font=compliment_font)
+                    line_width = line_bbox[2] - line_bbox[0]
+                    draw.text(((img_width - line_width) // 2, y_position), line, fill=text_color, font=compliment_font)
+                    y_position += 35
+                
+                y_position += 10  # Extra space between compliments
+        
+        # Add footer
+        footer = "Generated by Complementor App"
+        footer_bbox = draw.textbbox((0, 0), footer, font=compliment_font)
+        footer_width = footer_bbox[2] - footer_bbox[0]
+        draw.text(((img_width - footer_width) // 2, img_height - 50), footer, fill=(128, 128, 128), font=compliment_font)
+        
+        # Save image to memory
+        img_buffer = io.BytesIO()
+        img.save(img_buffer, format='PNG')
+        img_buffer.seek(0)
+        
+        # Return file for download
+        return send_file(
+            img_buffer,
+            mimetype='image/png',
+            as_attachment=True,
+            download_name=f'{name.lower()}_compliments.png'
+        )
+        
+    except Exception as e:
+        print(f"Error generating download: {e}")
+        return f"Error generating download: {str(e)}", 500
 
 # Initialize database
 def init_db():
